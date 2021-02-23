@@ -6,6 +6,8 @@ from playsound import playsound
 import time
 import threading
 import random
+from sleep_service import SleepService
+from zero_crossing_rate_service import ZeroCrossingRateService
  
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
@@ -15,9 +17,6 @@ RECORD_SECONDS = 108000 #(60*60*30)
 SLEEP_TIME = 5
 WAVE_OUTPUT_FILENAME = "wave.wav"
 DECIBEL_LIMIT = -15
-
-class MyClass:
-    not_waiting_for_sleep = True
 
 def rms(data):
     count = len(data)/2
@@ -43,9 +42,8 @@ def main():
         data = stream.read(CHUNK)
         decibels = 20 * math.log10(rms(data))
         print("Decibels: " + str(decibels))
-        if decibels > DECIBEL_LIMIT and decibels < -0.1 and MyClass.not_waiting_for_sleep:
-            print("Vai dizer não")
-            MyClass.not_waiting_for_sleep = False
+        if decibels > DECIBEL_LIMIT and decibels < -0.1 and SleepService.not_waiting_for_sleep:
+            SleepService.not_waiting_for_sleep = False
             playsound(select_file())
             thread = threading.Thread(target=sleep, args=())
             thread.start()
@@ -63,10 +61,10 @@ def main():
     waveFile.close()
 
 def sleep():
-    print("Vai dormir: " + str(MyClass.not_waiting_for_sleep))
+    print("Vai dormir: " + str(SleepService.not_waiting_for_sleep))
     time.sleep(SLEEP_TIME)
-    MyClass.not_waiting_for_sleep = True
-    print("----------------------------------- Finished sleeping: " + str(MyClass.not_waiting_for_sleep) + "-------------------------------------")
+    SleepService.not_waiting_for_sleep = True
+    print("----------------------------------- Finished sleeping: " + str(SleepService.not_waiting_for_sleep) + "-------------------------------------")
 
 def select_file():
     random_file = random.randint(1, 5)
