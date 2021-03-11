@@ -5,15 +5,15 @@ from numpy import loadtxt
 class NeuralNetworkService:
 
      def __init__(self, learning_file):
-        self.learning_file = learning_file
-        dataset = loadtxt('teste.csv', delimiter=',')
+        dataset = loadtxt(learning_file, delimiter=',')
         # split into input (X) and output (y) variables
-        X = dataset[:,0:8]
-        y = dataset[:,8]
+        # pdb.set_trace()
+        X = dataset[:,0:115]
+        y = dataset[:,115]
         
         # define the keras model
         model = Sequential()
-        model.add(Dense(12, input_dim=8, activation='relu'))
+        model.add(Dense(12, input_dim=115, activation='relu'))
         model.add(Dense(8, activation='relu'))
         model.add(Dense(1, activation='sigmoid'))
         
@@ -26,3 +26,14 @@ class NeuralNetworkService:
         # evaluate the keras model
         _, accuracy = model.evaluate(X, y)
         print('Accuracy: %.2f' % (accuracy*100))
+
+
+        dataset2 = loadtxt('file_to_evaluate.csv', delimiter=',')
+        csv_to_evaluate = dataset2[:,0:115]
+        # make class predictions with the model
+        predictions = model.predict_classes(csv_to_evaluate)
+        # summarize the first 5 cases
+        for i in range(5):
+           print('%s => %d (expected %d)' % (X[i].tolist(), predictions[i], y[i]))
+
+NeuralNetworkService('zero_crossing_rate_info.csv')

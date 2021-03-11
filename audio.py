@@ -7,16 +7,15 @@ import time
 import threading
 import random
 from sleep_service import SleepService
-from zero_crossing_rate_service import ZeroCrossingRateService
  
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
 CHUNK = 1024
 RECORD_SECONDS = 108000 #(60*60*30)
-SLEEP_TIME = 5
+SLEEP_TIME = 15
 WAVE_OUTPUT_FILENAME = "wave.wav"
-DECIBEL_LIMIT = -15
+DECIBEL_LIMIT = -0.1
 
 def rms(data):
     count = len(data)/2
@@ -42,7 +41,7 @@ def main():
         data = stream.read(CHUNK)
         decibels = 20 * math.log10(rms(data))
         print("Decibels: " + str(decibels))
-        if decibels > DECIBEL_LIMIT and decibels < -0.1 and SleepService.not_waiting_for_sleep:
+        if decibels > DECIBEL_LIMIT and SleepService.not_waiting_for_sleep:
             SleepService.not_waiting_for_sleep = False
             playsound(select_file())
             thread = threading.Thread(target=sleep, args=())
@@ -72,11 +71,11 @@ def select_file():
     return files[str(random_file)]
 
 files = {
-  "1": "nao_forte.wav",
-  "2": "nao_forte_2.wav",
-  "3": "nao_forte_3.wav",
-  "4": "nao_forte_4.wav",
-  "5": "nao_forte_5.wav"
+  "1": "nao_files/nao_forte.wav",
+  "2": "nao_files/nao_forte_2.wav",
+  "3": "nao_files/nao_forte_3.wav",
+  "4": "nao_files/nao_forte_4.wav",
+  "5": "nao_files/nao_forte_5.wav"
 }
 
 main()
